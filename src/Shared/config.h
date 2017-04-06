@@ -8,7 +8,7 @@
 /* #undef ARCH_SPARC */
 
 /* Architecture is x86 */
-#define ARCH_X86 
+/* #undef ARCH_X86 */
 
 /* Architecture is x86_64 */
 /* #undef ARCH_X86_64 */
@@ -17,7 +17,7 @@
 #define BUILD_CROSS_PLATFORM 
 
 /* with assembly enabled */
-/* #undef ENABLE_ASSEMBLY */
+#define ENABLE_ASSEMBLY 
 
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #define HAVE_DLFCN_H 1

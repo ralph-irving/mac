@@ -81,15 +81,15 @@ int main(int argc, char* argv[])
 
 	// audio format information
 	printf("Audio Format:\r\n");
-	printf("\tSamples per second: %d\r\n", pAPEDecompress->GetInfo(APE_INFO_SAMPLE_RATE));
-	printf("\tBits per sample: %d\r\n", pAPEDecompress->GetInfo(APE_INFO_BITS_PER_SAMPLE));
-	printf("\tNumber of channels: %d\r\n", pAPEDecompress->GetInfo(APE_INFO_CHANNELS));
-	printf("\tPeak level: %d\r\n\r\n", pAPEDecompress->GetInfo(APE_INFO_PEAK_LEVEL));
+	printf("\tSamples per second: %zd\r\n", pAPEDecompress->GetInfo(APE_INFO_SAMPLE_RATE));
+	printf("\tBits per sample: %zd\r\n", pAPEDecompress->GetInfo(APE_INFO_BITS_PER_SAMPLE));
+	printf("\tNumber of channels: %zd\r\n", pAPEDecompress->GetInfo(APE_INFO_CHANNELS));
+	printf("\tPeak level: %zd\r\n\r\n", pAPEDecompress->GetInfo(APE_INFO_PEAK_LEVEL));
 
 	// size and duration information
 	printf("Size and Duration:\r\n");
-	printf("\tLength of file (s): %d\r\n", pAPEDecompress->GetInfo(APE_INFO_LENGTH_MS) / 1000);
-	printf("\tFile Size (kb): %d\r\n\r\n", pAPEDecompress->GetInfo(APE_INFO_APE_TOTAL_BYTES) / 1024);
+	printf("\tLength of file (s): %zd\r\n", pAPEDecompress->GetInfo(APE_INFO_LENGTH_MS) / 1000);
+	printf("\tFile Size (kb): %zd\r\n\r\n", pAPEDecompress->GetInfo(APE_INFO_APE_TOTAL_BYTES) / 1024);
 	
 	// tag information
 	printf("Tag Information:\r\n");

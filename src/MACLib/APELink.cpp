@@ -63,10 +63,10 @@ void CAPELink::ParseData(const char * pData, const str_utf16 * pFilename)
     if (pData != NULL)
     {
         // parse out the information
-        const char * pHeader = strstr(pData, APE_LINK_HEADER);
-        const char * pImageFile = strstr(pData, APE_LINK_IMAGE_FILE_TAG);
-        const char * pStartBlock = strstr(pData, APE_LINK_START_BLOCK_TAG);
-        const char * pFinishBlock = strstr(pData, APE_LINK_FINISH_BLOCK_TAG);
+        const char * pHeader = (const char *) strstr(pData, APE_LINK_HEADER);
+        const char * pImageFile = (const char *) strstr(pData, APE_LINK_IMAGE_FILE_TAG);
+        const char * pStartBlock = (const char *) strstr(pData, APE_LINK_START_BLOCK_TAG);
+        const char * pFinishBlock = (const char *) strstr(pData, APE_LINK_FINISH_BLOCK_TAG);
 
         if (pHeader && pImageFile && pStartBlock && pFinishBlock)
         {
@@ -86,10 +86,10 @@ void CAPELink::ParseData(const char * pData, const str_utf16 * pFilename)
                     cImageFile[nIndex++] = *pImageCharacter++;
                 cImageFile[nIndex] = 0;
 
-                CSmartPtr<str_utf16> spImageFileUTF16(GetUTF16FromUTF8((UCHAR *) cImageFile), TRUE);
+                CSmartPtr<str_utf16> spImageFileUTF16(CAPECharacterHelper::GetUTF16FromUTF8((UCHAR *) cImageFile), TRUE);
 
                 // process the path
-                if (wcsrchr(spImageFileUTF16, FILE_SEPARATOR) == NULL)
+                if ((wcsrchr(spImageFileUTF16, FILE_SEPARATOR) == NULL) && (wcsrchr(pFilename, FILE_SEPARATOR) != NULL))
                 {
                     str_utf16 cImagePath[MAX_PATH + 1];
                     wcscpy(cImagePath, pFilename);

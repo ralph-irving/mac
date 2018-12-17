@@ -118,15 +118,21 @@ int CStdLibFileIO::GetHandle()
     return FILENO(m_pFile);
 }
 
-int CStdLibFileIO::Open(const wchar_t * pName)
+int CStdLibFileIO::Open(const wchar_t * pName, BOOL bOpenReadOnly)
 {
     Close();
 
     m_bReadOnly = FALSE;
 
-    char * wpName = GetANSIFromUTF16(pName);
-
-    if (0 == wcscmp(pName, L"-") || 0 == wcscmp(pName, L"/dev/stdin")) 
+    char * wpName = CAPECharacterHelper::GetANSIFromUTF16(pName);
+#ifdef SHNTOOL
+    if (0 == wcscmp(pName, L"-")) 
+    {
+        m_pFile = SETBINARY_IN(stdin);
+        m_bReadOnly = TRUE;                                                     // ReadOnly
+    }
+#else
+    if (0 == wcscmp(pName, L"-") || 0 == wcscmp(pName, L"/dev/stdin"))
     {
         m_pFile = SETBINARY_IN(stdin);
         m_bReadOnly = TRUE;                                                     // ReadOnly
@@ -136,6 +142,7 @@ int CStdLibFileIO::Open(const wchar_t * pName)
         m_pFile = SETBINARY_OUT(stdout);
         m_bReadOnly = FALSE;                                                    // WriteOnly
     }
+#endif
     else 
     {
         m_pFile = fopen(wpName, "r+b");
@@ -225,14 +232,22 @@ int CStdLibFileIO::Create(const wchar_t * pName)
 {
     Close();
 
+#ifdef SHNTOOL
+    if (0 == wcscmp (pName, L"-")) 
+    {
+        m_pFile = SETBINARY_OUT(stdout);
+        m_bReadOnly = FALSE;                            // WriteOnly
+    }
+#else
     if (0 == wcscmp (pName, L"-") || 0 == wcscmp (pName, L"/dev/stdout")) 
     {
         m_pFile = SETBINARY_OUT(stdout);
         m_bReadOnly = FALSE;                            // WriteOnly
     }
+#endif
     else 
     {
-	char * wpName = GetANSIFromUTF16(pName);
+	char * wpName = CAPECharacterHelper::GetANSIFromUTF16(pName);
         m_pFile = fopen (wpName, "wb+");                 // Read/Write
         m_bReadOnly = FALSE;
     }
@@ -248,7 +263,7 @@ int CStdLibFileIO::Create(const wchar_t * pName)
 int CStdLibFileIO::Delete()
 {
     Close();
-    return unlink (GetANSIFromUTF16(m_cFileName));    // 0 success, -1 error
+    return unlink (CAPECharacterHelper::GetANSIFromUTF16(m_cFileName));    // 0 success, -1 error
 }
 
 #endif // #ifdef IO_USE_STD_LIB_FILE_IO

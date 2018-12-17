@@ -4,7 +4,6 @@ Includes
 #include "All.h"
 #include "BitArray.h"
 #include "MD5.h"
-#include <algorithm>
 
 /************************************************************************************
 Declares
@@ -114,7 +113,7 @@ int CBitArray::OutputBitArray(BOOL bFinalize)
         m_nCurrentBitIndex = (m_nCurrentBitIndex & 31);
         
         // zero the rest of the memory (may not need the +1 because of frame byte alignment)
-        memset(&m_pBitArray[1], 0, std::min((int)nBytesToWrite + 1, BIT_ARRAY_BYTES - 1));
+        memset(&m_pBitArray[1], 0, min(nBytesToWrite + 1, BIT_ARRAY_BYTES - 1));
     }
     
     // return a success
@@ -232,25 +231,14 @@ int CBitArray::EncodeValue(int nEncode, BIT_ARRAY_STATE & BitArrayState)
     
     // convert to unsigned
     nEncode = (nEncode > 0) ? nEncode * 2 - 1 : -nEncode * 2;
-    
-    int nOriginalKSum = BitArrayState.nKSum;
-
-    // get the working k
-//    int nTempK = (BitArrayState.k) ? BitArrayState.k - 1 : 0;
-    
-    // update nKSum
-    BitArrayState.nKSum += ((nEncode + 1) / 2) - ((BitArrayState.nKSum + 16) >> 5);
-
-    // update k
-    if (BitArrayState.nKSum < K_SUM_MIN_BOUNDARY[BitArrayState.k]) 
-        BitArrayState.k--;
-    else if (BitArrayState.nKSum >= K_SUM_MIN_BOUNDARY[BitArrayState.k + 1]) 
-        BitArrayState.k++;
 
     // figure the pivot value
-    int nPivotValue = std::max(nOriginalKSum / 32, 1);
+    int nPivotValue = max(BitArrayState.nKSum / 32, 1);
     int nOverflow = nEncode / nPivotValue;
     int nBase = nEncode - (nOverflow * nPivotValue);
+
+    // update nKSum
+    BitArrayState.nKSum += ((nEncode + 1) / 2) - ((BitArrayState.nKSum + 16) >> 5);
 
     // store the overflow
     if (nOverflow < (MODEL_ELEMENTS - 1))
@@ -314,7 +302,6 @@ int CBitArray::EncodeValue(int nEncode, BIT_ARRAY_STATE & BitArrayState)
         }
         else
         {
-
             NORMALIZE_RANGE_CODER
             const int nTemp = m_RangeCoderInfo.range / nPivotValue;
             m_RangeCoderInfo.range = nTemp;
@@ -342,9 +329,8 @@ void CBitArray::FlushBitArray()
 
 void CBitArray::FlushState(BIT_ARRAY_STATE & BitArrayState) 
 {
-    // k and ksum
-    BitArrayState.k = 10;
-    BitArrayState.nKSum = (1 << BitArrayState.k) * 16;
+    // ksum
+    BitArrayState.nKSum = (1 << 10) * 16;
 }
 
 /************************************************************************************

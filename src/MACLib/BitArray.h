@@ -16,7 +16,6 @@ struct RANGE_CODER_STRUCT_COMPRESS
 
 struct BIT_ARRAY_STATE
 {
-    uint32    k;
     uint32    nKSum;
 };
 
@@ -42,7 +41,7 @@ public:
     inline uint32 GetCurrentBitIndex() { return m_nCurrentBitIndex; }
     void FlushState(BIT_ARRAY_STATE & BitArrayState);
     void FlushBitArray();
-    inline CMD5Helper & GetMD5Helper() { return m_MD5; }
+    __forceinline CMD5Helper & GetMD5Helper() { return m_MD5; }
         
 private:
     

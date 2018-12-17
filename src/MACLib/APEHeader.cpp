@@ -3,8 +3,6 @@
 #include "MACLib.h"
 #include "APEInfo.h"
 
-// TODO: should push and pop the file position
-
 CAPEHeader::CAPEHeader(CIO * pIO)
 {
     m_pIO = pIO;
@@ -12,7 +10,6 @@ CAPEHeader::CAPEHeader(CIO * pIO)
 
 CAPEHeader::~CAPEHeader()
 {
-
 }
 
 int CAPEHeader::FindDescriptor(BOOL bSeek)
@@ -196,27 +193,27 @@ int CAPEHeader::AnalyzeCurrent(APE_FILE_INFO * pInfo)
         m_pIO->Seek(pInfo->spAPEDescriptor->nHeaderBytes - nBytesRead, FILE_CURRENT);
 
     // fill the APE info structure
-    pInfo->nVersion                = int(pInfo->spAPEDescriptor->nVersion);
-    pInfo->nCompressionLevel    = int(APEHeader.nCompressionLevel);
-    pInfo->nFormatFlags            = int(APEHeader.nFormatFlags);
-    pInfo->nTotalFrames            = int(APEHeader.nTotalFrames);
-    pInfo->nFinalFrameBlocks    = int(APEHeader.nFinalFrameBlocks);
+    pInfo->nVersion               = int(pInfo->spAPEDescriptor->nVersion);
+    pInfo->nCompressionLevel      = int(APEHeader.nCompressionLevel);
+    pInfo->nFormatFlags           = int(APEHeader.nFormatFlags);
+    pInfo->nTotalFrames           = int(APEHeader.nTotalFrames);
+    pInfo->nFinalFrameBlocks      = int(APEHeader.nFinalFrameBlocks);
     pInfo->nBlocksPerFrame        = int(APEHeader.nBlocksPerFrame);
-    pInfo->nChannels            = int(APEHeader.nChannels);
+    pInfo->nChannels              = int(APEHeader.nChannels);
     pInfo->nSampleRate            = int(APEHeader.nSampleRate);
-    pInfo->nBitsPerSample        = int(APEHeader.nBitsPerSample);
+    pInfo->nBitsPerSample         = int(APEHeader.nBitsPerSample);
     pInfo->nBytesPerSample        = pInfo->nBitsPerSample / 8;
     pInfo->nBlockAlign            = pInfo->nBytesPerSample * pInfo->nChannels;
-    pInfo->nTotalBlocks            = (APEHeader.nTotalFrames == 0) ? 0 : ((APEHeader.nTotalFrames -  1) * pInfo->nBlocksPerFrame) + APEHeader.nFinalFrameBlocks;
+    pInfo->nTotalBlocks           = (APEHeader.nTotalFrames == 0) ? 0 : ((APEHeader.nTotalFrames -  1) * pInfo->nBlocksPerFrame) + APEHeader.nFinalFrameBlocks;
     pInfo->nWAVHeaderBytes        = (APEHeader.nFormatFlags & MAC_FORMAT_FLAG_CREATE_WAV_HEADER) ? sizeof(WAVE_HEADER) : pInfo->spAPEDescriptor->nHeaderDataBytes;
-    pInfo->nWAVTerminatingBytes    = pInfo->spAPEDescriptor->nTerminatingDataBytes;
-    pInfo->nWAVDataBytes        = pInfo->nTotalBlocks * pInfo->nBlockAlign;
-    pInfo->nWAVTotalBytes        = pInfo->nWAVDataBytes + pInfo->nWAVHeaderBytes + pInfo->nWAVTerminatingBytes;
-    pInfo->nAPETotalBytes        = m_pIO->GetSize();
-    pInfo->nLengthMS            = int((double(pInfo->nTotalBlocks) * double(1000)) / double(pInfo->nSampleRate));
+    pInfo->nWAVTerminatingBytes   = pInfo->spAPEDescriptor->nTerminatingDataBytes;
+    pInfo->nWAVDataBytes          = pInfo->nTotalBlocks * pInfo->nBlockAlign;
+    pInfo->nWAVTotalBytes         = pInfo->nWAVDataBytes + pInfo->nWAVHeaderBytes + pInfo->nWAVTerminatingBytes;
+    pInfo->nAPETotalBytes         = m_pIO->GetSize();
+    pInfo->nLengthMS              = int((double(pInfo->nTotalBlocks) * double(1000)) / double(pInfo->nSampleRate));
     pInfo->nAverageBitrate        = (pInfo->nLengthMS <= 0) ? 0 : int((double(pInfo->nAPETotalBytes) * double(8)) / double(pInfo->nLengthMS));
-    pInfo->nDecompressedBitrate = (pInfo->nBlockAlign * pInfo->nSampleRate * 8) / 1000;
-    pInfo->nSeekTableElements    = pInfo->spAPEDescriptor->nSeekTableBytes / 4;
+    pInfo->nDecompressedBitrate   = (pInfo->nBlockAlign * pInfo->nSampleRate * 8) / 1000;
+    pInfo->nSeekTableElements     = pInfo->spAPEDescriptor->nSeekTableBytes / 4;
 
     // get the seek tables (really no reason to get the whole thing if there's extra)
     pInfo->spSeekByteTable.Assign(new uint32 [pInfo->nSeekTableElements], TRUE);
@@ -277,27 +274,27 @@ int CAPEHeader::AnalyzeOld(APE_FILE_INFO * pInfo)
         pInfo->nSeekTableElements = APEHeader.nTotalFrames;
     
     // fill the APE info structure
-    pInfo->nVersion                = int(APEHeader.nVersion);
-    pInfo->nCompressionLevel    = int(APEHeader.nCompressionLevel);
-    pInfo->nFormatFlags            = int(APEHeader.nFormatFlags);
-    pInfo->nTotalFrames            = int(APEHeader.nTotalFrames);
-    pInfo->nFinalFrameBlocks    = int(APEHeader.nFinalFrameBlocks);
+    pInfo->nVersion               = int(APEHeader.nVersion);
+    pInfo->nCompressionLevel      = int(APEHeader.nCompressionLevel);
+    pInfo->nFormatFlags           = int(APEHeader.nFormatFlags);
+    pInfo->nTotalFrames           = int(APEHeader.nTotalFrames);
+    pInfo->nFinalFrameBlocks      = int(APEHeader.nFinalFrameBlocks);
     pInfo->nBlocksPerFrame        = ((APEHeader.nVersion >= 3900) || ((APEHeader.nVersion >= 3800) && (APEHeader.nCompressionLevel == COMPRESSION_LEVEL_EXTRA_HIGH))) ? 73728 : 9216;
     if ((APEHeader.nVersion >= 3950)) pInfo->nBlocksPerFrame = 73728 * 4;
-    pInfo->nChannels            = int(APEHeader.nChannels);
+    pInfo->nChannels              = int(APEHeader.nChannels);
     pInfo->nSampleRate            = int(APEHeader.nSampleRate);
-    pInfo->nBitsPerSample        = (pInfo->nFormatFlags & MAC_FORMAT_FLAG_8_BIT) ? 8 : ((pInfo->nFormatFlags & MAC_FORMAT_FLAG_24_BIT) ? 24 : 16);
+    pInfo->nBitsPerSample         = (pInfo->nFormatFlags & MAC_FORMAT_FLAG_8_BIT) ? 8 : ((pInfo->nFormatFlags & MAC_FORMAT_FLAG_24_BIT) ? 24 : 16);
     pInfo->nBytesPerSample        = pInfo->nBitsPerSample / 8;
     pInfo->nBlockAlign            = pInfo->nBytesPerSample * pInfo->nChannels;
-    pInfo->nTotalBlocks            = (APEHeader.nTotalFrames == 0) ? 0 : ((APEHeader.nTotalFrames -  1) * pInfo->nBlocksPerFrame) + APEHeader.nFinalFrameBlocks;
+    pInfo->nTotalBlocks           = (APEHeader.nTotalFrames == 0) ? 0 : ((APEHeader.nTotalFrames -  1) * pInfo->nBlocksPerFrame) + APEHeader.nFinalFrameBlocks;
     pInfo->nWAVHeaderBytes        = (APEHeader.nFormatFlags & MAC_FORMAT_FLAG_CREATE_WAV_HEADER) ? sizeof(WAVE_HEADER) : APEHeader.nHeaderBytes;
-    pInfo->nWAVTerminatingBytes    = int(APEHeader.nTerminatingBytes);
-    pInfo->nWAVDataBytes        = pInfo->nTotalBlocks * pInfo->nBlockAlign;
-    pInfo->nWAVTotalBytes        = pInfo->nWAVDataBytes + pInfo->nWAVHeaderBytes + pInfo->nWAVTerminatingBytes;
-    pInfo->nAPETotalBytes        = m_pIO->GetSize();
-    pInfo->nLengthMS            = int((double(pInfo->nTotalBlocks) * double(1000)) / double(pInfo->nSampleRate));
+    pInfo->nWAVTerminatingBytes   = int(APEHeader.nTerminatingBytes);
+    pInfo->nWAVDataBytes          = pInfo->nTotalBlocks * pInfo->nBlockAlign;
+    pInfo->nWAVTotalBytes         = pInfo->nWAVDataBytes + pInfo->nWAVHeaderBytes + pInfo->nWAVTerminatingBytes;
+    pInfo->nAPETotalBytes         = m_pIO->GetSize();
+    pInfo->nLengthMS              = int((double(pInfo->nTotalBlocks) * double(1000)) / double(pInfo->nSampleRate));
     pInfo->nAverageBitrate        = (pInfo->nLengthMS <= 0) ? 0 : int((double(pInfo->nAPETotalBytes) * double(8)) / double(pInfo->nLengthMS));
-    pInfo->nDecompressedBitrate = (pInfo->nBlockAlign * pInfo->nSampleRate * 8) / 1000;
+    pInfo->nDecompressedBitrate   = (pInfo->nBlockAlign * pInfo->nSampleRate * 8) / 1000;
 
     // get the wave header
     if (!(APEHeader.nFormatFlags & MAC_FORMAT_FLAG_CREATE_WAV_HEADER))
@@ -324,6 +321,7 @@ int CAPEHeader::AnalyzeOld(APE_FILE_INFO * pInfo)
 
 #endif
 
+    // seek bit table (for older files)
     if (APEHeader.nVersion <= 3800) 
     {
         pInfo->spSeekBitTable.Assign(new unsigned char [pInfo->nSeekTableElements], TRUE);

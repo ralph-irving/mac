@@ -12,7 +12,11 @@ public:
     ~CAPECompressCreate();
     
     int InitializeFile(CIO * pIO, const WAVEFORMATEX * pwfeInput, int nMaxFrames, int nCompressionLevel, const void * pHeaderData, int nHeaderBytes);
+#ifdef SHNTOOL
+    int FinalizeFile(CIO * pIO, int nNumberOfFrames, int nFinalFrameBlocks, const void * pTerminatingData, int nTerminatingBytes, int nWAVTerminatingBytes, int nPeakLevel, const void * pHeaderData, int nHeaderBytes);
+#else
     int FinalizeFile(CIO * pIO, int nNumberOfFrames, int nFinalFrameBlocks, const void * pTerminatingData, int nTerminatingBytes, int nWAVTerminatingBytes, int nPeakLevel);
+#endif
     
     int SetSeekByte(int nFrame, int nByteOffset);
 
@@ -21,7 +25,11 @@ public:
     int GetFullFrameBytes();
     int EncodeFrame(const void * pInputData, int nInputBytes);
 
+#ifdef SHNTOOL
+    int Finish(const void * pTerminatingData, int nTerminatingBytes, int nWAVTerminatingBytes, const void * pHeaderData, int nHeaderBytes);
+#else
     int Finish(const void * pTerminatingData, int nTerminatingBytes, int nWAVTerminatingBytes);
+#endif
     
 
 private:

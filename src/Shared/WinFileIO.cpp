@@ -18,7 +18,7 @@ CWinFileIO::~CWinFileIO()
     Close();
 }
 
-int CWinFileIO::Open(const wchar_t * pName)
+int CWinFileIO::Open(const wchar_t * pName, BOOL bOpenReadOnly)
 {
     Close();
 
@@ -28,9 +28,22 @@ int CWinFileIO::Open(const wchar_t * pName)
         CSmartPtr<char> spName(GetANSIFromUTF16(pName), TRUE);
     #endif
 
-    m_hFile = ::CreateFile(spName, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+#ifdef SHNTOOL
+	if ( 0 == wcscmp (pName, L"-") )
+	{
+		m_hFile = GetStdHandle (STD_INPUT_HANDLE);
+		m_bReadOnly = TRUE;
+		// ReadOnly
+	}
+	else
+#endif
+    // open (read / write)
+    if (bOpenReadOnly == FALSE)
+        m_hFile = ::CreateFile(spName, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+
     if (m_hFile == INVALID_HANDLE_VALUE) 
     {
+        // open (read-only)
         m_hFile = ::CreateFile(spName, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
         if (m_hFile == INVALID_HANDLE_VALUE) 
         {
@@ -136,10 +149,23 @@ int CWinFileIO::Create(const wchar_t * pName)
         CSmartPtr<char> spName(GetANSIFromUTF16(pName), TRUE);
     #endif
 
-    m_hFile = CreateFile(spName, GENERIC_WRITE | GENERIC_READ, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-    if (m_hFile == INVALID_HANDLE_VALUE) { return -1; }
+#ifdef SHNTOOL
+	if ( 0 == wcscmp (pName, L"-") )
+	{
+		m_hFile = GetStdHandle (STD_OUTPUT_HANDLE);
+		m_bReadOnly = FALSE;
+		// ReadOnly
+	}
+	else
+	{
+#endif
+        m_hFile = CreateFile(spName, GENERIC_WRITE | GENERIC_READ, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+        if (m_hFile == INVALID_HANDLE_VALUE) { return -1; }
 
-    m_bReadOnly = FALSE;
+        m_bReadOnly = FALSE;
+#ifdef SHNTOOL
+    }
+#endif
     
     wcscpy(m_cFileName, pName);
 

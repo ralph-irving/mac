@@ -21,8 +21,9 @@ class CUnBitArrayBase
 {
 public:
 
-    // virtual destructor
-    virtual ~CUnBitArrayBase() {}
+    // construction / destruction
+    CUnBitArrayBase(int nFurthestReadByte);
+    virtual ~CUnBitArrayBase();
     
     // functions
     virtual int FillBitArray();
@@ -34,9 +35,9 @@ public:
     virtual void AdvanceToByteBoundary();
 
     virtual int DecodeValueRange(UNBIT_ARRAY_STATE & BitArrayState) { return 0; }
-    virtual void FlushState(UNBIT_ARRAY_STATE & BitArrayState) {}
-    virtual void FlushBitArray() {}
-    virtual void Finalize() {}
+    virtual void FlushState(UNBIT_ARRAY_STATE & BitArrayState) { }
+    virtual void FlushBitArray() { }
+    virtual void Finalize() { }
     
 protected:
 
@@ -46,9 +47,11 @@ protected:
     uint32 m_nElements;
     uint32 m_nBytes;
     uint32 m_nBits;
+    uint32 m_nGoodBytes;
     
     int m_nVersion;
     CIO * m_pIO;
+    int m_nFurthestReadByte;
 
     uint32 m_nCurrentBitIndex;
     uint32 * m_pBitArray;

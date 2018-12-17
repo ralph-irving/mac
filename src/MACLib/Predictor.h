@@ -7,6 +7,7 @@ IPredictorCompress - the interface for compressing (predicting) data
 class IPredictorCompress
 {
 public:
+
     IPredictorCompress(int nCompressionLevel) {}
     virtual ~IPredictorCompress() {}
 
@@ -20,6 +21,7 @@ IPredictorDecompress - the interface for decompressing (un-predicting) data
 class IPredictorDecompress
 {
 public:
+
     IPredictorDecompress(int nCompressionLevel, int nVersion) {}
     virtual ~IPredictorDecompress() {}
 

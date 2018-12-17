@@ -49,7 +49,7 @@ int main(int argc, char* argv[])
 	IAPEDecompress *	pAPEDecompress = NULL;								// APE interface
 	CSmartPtr<wchar_t> spInput;
 
-	spInput.Assign(GetUTF16FromANSI(argv[1]), TRUE);
+	spInput.Assign(CAPECharacterHelper::GetUTF16FromANSI(argv[1]), TRUE);
 	
 //*
 	///////////////////////////////////////////////////////////////////////////////
@@ -81,15 +81,15 @@ int main(int argc, char* argv[])
 
 	// audio format information
 	printf("Audio Format:\r\n");
-	printf("\tSamples per second: %zd\r\n", pAPEDecompress->GetInfo(APE_INFO_SAMPLE_RATE));
-	printf("\tBits per sample: %zd\r\n", pAPEDecompress->GetInfo(APE_INFO_BITS_PER_SAMPLE));
-	printf("\tNumber of channels: %zd\r\n", pAPEDecompress->GetInfo(APE_INFO_CHANNELS));
-	printf("\tPeak level: %zd\r\n\r\n", pAPEDecompress->GetInfo(APE_INFO_PEAK_LEVEL));
+	printf("\tSamples per second: %d\r\n", pAPEDecompress->GetInfo(APE_INFO_SAMPLE_RATE));
+	printf("\tBits per sample: %d\r\n", pAPEDecompress->GetInfo(APE_INFO_BITS_PER_SAMPLE));
+	printf("\tNumber of channels: %d\r\n", pAPEDecompress->GetInfo(APE_INFO_CHANNELS));
+	printf("\tPeak level: %d\r\n\r\n", pAPEDecompress->GetInfo(APE_INFO_PEAK_LEVEL));
 
 	// size and duration information
 	printf("Size and Duration:\r\n");
-	printf("\tLength of file (s): %zd\r\n", pAPEDecompress->GetInfo(APE_INFO_LENGTH_MS) / 1000);
-	printf("\tFile Size (kb): %zd\r\n\r\n", pAPEDecompress->GetInfo(APE_INFO_APE_TOTAL_BYTES) / 1024);
+	printf("\tLength of file (s): %d\r\n", pAPEDecompress->GetInfo(APE_INFO_LENGTH_MS) / 1000);
+	printf("\tFile Size (kb): %d\r\n\r\n", pAPEDecompress->GetInfo(APE_INFO_APE_TOTAL_BYTES) / 1024);
 	
 	// tag information
 	printf("Tag Information:\r\n");
@@ -120,7 +120,7 @@ int main(int argc, char* argv[])
 			// output the tag field properties (don't output huge fields like images, etc.)
 			if (pTagField->GetFieldValueSize() > 128)
 			{
-				printf("\t%s: --- too much data to display ---\r\n", GetANSIFromUTF16(pTagField->GetFieldName()));
+				printf("\t%s: --- too much data to display ---\r\n", CAPECharacterHelper::GetANSIFromUTF16(pTagField->GetFieldName()));
 			}
 			else
 			{
@@ -145,12 +145,12 @@ int main(int argc, char* argv[])
 			    char *value;
 
 			    fieldName = pTagField->GetFieldName();
-			    name = GetANSIFromUTF16(fieldName);
+			    name = CAPECharacterHelper::GetANSIFromUTF16(fieldName);
 
 			    fieldValue = pTagField->GetFieldValue();
 			    if (pAPETag->GetAPETagVersion() == CURRENT_APE_TAG_VERSION)
 			    {
-				value = GetANSIFromUTF8((unsigned char *)fieldValue);
+				value = CAPECharacterHelper::GetANSIFromUTF8((unsigned char *)fieldValue);
 			    }
 			    else
 			    {

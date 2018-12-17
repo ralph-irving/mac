@@ -28,11 +28,13 @@ private:
 
     short * m_paryM;
 
-    inline short GetSaturatedShortFromInt(int nValue) const
+    __forceinline short GetSaturatedShortFromInt(int nValue) const
     {
         return short((nValue == short(nValue)) ? nValue : (nValue >> 31) ^ 0x7FFF);
     }
 
+    __forceinline int CalculateDotProductNoMMX(short * pA, short * pB, int nOrder);
+    __forceinline void AdaptNoMMX(short * pM, short * pAdapt, int nDirection, int nOrder);
 };
 
 #endif // #ifndef APE_NNFILTER_H

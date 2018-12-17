@@ -1,6 +1,5 @@
 #include "All.h"
 #include "CircleBuffer.h"
-#include <algorithm>
 
 CCircleBuffer::CCircleBuffer()
 {
@@ -46,7 +45,7 @@ int CCircleBuffer::Get(unsigned char * pBuffer, int nBytes)
 
     if (pBuffer != NULL && nBytes > 0)
     {
-        int nHeadBytes = std::min(m_nEndCap - m_nHead, nBytes);
+        int nHeadBytes = min(m_nEndCap - m_nHead, nBytes);
         int nFrontBytes = nBytes - nHeadBytes;
 
         memcpy(&pBuffer[0], &m_pBuffer[m_nHead], nHeadBytes);
@@ -73,7 +72,7 @@ void CCircleBuffer::Empty()
 
 int CCircleBuffer::RemoveHead(int nBytes)
 {
-    nBytes = std::min(MaxGet(), nBytes);
+    nBytes = min(MaxGet(), nBytes);
     m_nHead += nBytes;
     if (m_nHead >= m_nEndCap)
         m_nHead -= m_nEndCap;
@@ -82,7 +81,7 @@ int CCircleBuffer::RemoveHead(int nBytes)
 
 int CCircleBuffer::RemoveTail(int nBytes)
 {
-    nBytes = std::min(MaxGet(), nBytes);
+    nBytes = min(MaxGet(), nBytes);
     m_nTail -= nBytes;
     if (m_nTail < 0)
         m_nTail += m_nEndCap;

@@ -42,19 +42,19 @@ public:
         m_pCurrent = &m_pData[m_nHistoryElements];
     }
 
-    __inline void IncrementSafe()
+    __forceinline void IncrementSafe()
     {
         m_pCurrent++;
         if (m_pCurrent == &m_pData[m_nWindowElements + m_nHistoryElements])
             Roll();
     }
 
-    __inline void IncrementFast()
+    __forceinline void IncrementFast()
     {
         m_pCurrent++;
     }
 
-    __inline TYPE & operator[](const int nIndex) const
+    __forceinline TYPE & operator[](const int nIndex) const
     {
         return m_pCurrent[nIndex];
     }
@@ -94,19 +94,19 @@ public:
         m_pCurrent = &m_pData[HISTORY_ELEMENTS];
     }
 
-    __inline void IncrementSafe()
+    __forceinline void IncrementSafe()
     {
         m_pCurrent++;
         if (m_pCurrent == &m_pData[WINDOW_ELEMENTS + HISTORY_ELEMENTS])
             Roll();
     }
 
-    __inline void IncrementFast()
+    __forceinline void IncrementFast()
     {
         m_pCurrent++;
     }
 
-    __inline TYPE & operator[](const int nIndex) const
+    __forceinline TYPE & operator[](const int nIndex) const
     {
         return m_pCurrent[nIndex];
     }

@@ -3,20 +3,18 @@
 #include IO_HEADER_FILE
 #include "APECompressCreate.h"
 #include "WAVInputSource.h"
-#include <algorithm>
 
 CAPECompress::CAPECompress()
 {
-    m_nBufferHead        = 0;
-    m_nBufferTail        = 0;
-    m_nBufferSize        = 0;
-    m_bBufferLocked        = FALSE;
-    m_bOwnsOutputIO        = FALSE;
-    m_pioOutput            = NULL;
+    m_nBufferHead = 0;
+    m_nBufferTail = 0;
+    m_nBufferSize = 0;
+    m_bBufferLocked = FALSE;
+    m_bOwnsOutputIO = FALSE;
+    m_pioOutput = NULL;
+    m_pBuffer = NULL;
 
     m_spAPECompressCreate.Assign(new CAPECompressCreate());
-
-    m_pBuffer = NULL;
 }
 
 CAPECompress::~CAPECompress()
@@ -118,7 +116,7 @@ int CAPECompress::AddData(unsigned char * pData, int nBytes)
             return ERROR_UNDEFINED;
         
         // calculate how many bytes to copy and add that much to the buffer
-        int nBytesToProcess = std::min(nBytesAvailable, nBytes - nBytesDone);
+        int nBytesToProcess = min(nBytesAvailable, nBytes - nBytesDone);
         memcpy(pBuffer, &pData[nBytesDone], nBytesToProcess);
                         
         // unlock the buffer (fail if not successful)
@@ -133,10 +131,18 @@ int CAPECompress::AddData(unsigned char * pData, int nBytes)
     return ERROR_SUCCESS;
 } 
 
+#ifdef SHNTOOL
+int CAPECompress::Finish(unsigned char * pTerminatingData, int nTerminatingBytes, int nWAVTerminatingBytes, const void * pHeaderData, int nHeaderBytes)
+#else
 int CAPECompress::Finish(unsigned char * pTerminatingData, int nTerminatingBytes, int nWAVTerminatingBytes)
+#endif
 {
     RETURN_ON_ERROR(ProcessBuffer(TRUE))
+#ifdef SHNTOOL
+    return m_spAPECompressCreate->Finish(pTerminatingData, nTerminatingBytes, nWAVTerminatingBytes, pHeaderData, nHeaderBytes);
+#else
     return m_spAPECompressCreate->Finish(pTerminatingData, nTerminatingBytes, nWAVTerminatingBytes);
+#endif
 }
 
 int CAPECompress::Kill()
@@ -155,7 +161,7 @@ int CAPECompress::ProcessBuffer(BOOL bFinalize)
         
         while ((m_nBufferTail - m_nBufferHead) >= nThreshold)
         {
-            int nFrameBytes = std::min(m_spAPECompressCreate->GetFullFrameBytes(), m_nBufferTail - m_nBufferHead);
+            int nFrameBytes = min(m_spAPECompressCreate->GetFullFrameBytes(), m_nBufferTail - m_nBufferHead);
             
             if (nFrameBytes == 0)
                 break;
@@ -225,10 +231,20 @@ int CAPECompress::AddDataFromInputSource(CInputSource * pInputSource, int nMaxBy
         // get data
         int nBlocksAdded = 0;
         int nRetVal = pInputSource->GetData(pBuffer, nBlocksToAdd, &nBlocksAdded);
+
+#ifdef SHNTOOL
+        nBytesRead = (nBlocksAdded * m_wfeInput.nBlockAlign);
+        if (nRetVal != 0)
+        {
+            UnlockBuffer(nBytesRead, TRUE);
+            return ERROR_IO_READ;
+        }
+#else
         if (nRetVal != 0)
             return ERROR_IO_READ;
         else
             nBytesRead = (nBlocksAdded * m_wfeInput.nBlockAlign);
+#endif
         
         // store the bytes read
         if (pBytesAdded)
@@ -244,4 +260,3 @@ int CAPECompress::AddDataFromInputSource(CInputSource * pInputSource, int nMaxBy
     
     return ERROR_SUCCESS;
 }
-

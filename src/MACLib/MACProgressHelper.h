@@ -5,13 +5,13 @@
 #define KILL_FLAG_PAUSE             -1
 #define KILL_FLAG_STOP              1
 
-typedef void (__stdcall * APE_PROGRESS_CALLBACK) (int);
+class IAPEProgressCallback;
 
 class CMACProgressHelper  
 {
 public:
     
-    CMACProgressHelper(int nTotalSteps, int *pPercentageDone, APE_PROGRESS_CALLBACK ProgressCallback, int *pKillFlag);
+    CMACProgressHelper(int nTotalSteps, IAPEProgressCallback * pProgressCallback);
     virtual ~CMACProgressHelper();
 
     void UpdateProgress(int nCurrentStep = -1, BOOL bForceUpdate = FALSE);
@@ -21,16 +21,10 @@ public:
     
 private:
 
-    BOOL                    m_bUseCallback;
-    APE_PROGRESS_CALLBACK    m_CallbackFunction;
-    
-    int                        *m_pPercentageDone;
-
-    int                        m_nTotalSteps;
-    int                        m_nCurrentStep;
-    int                        m_nLastCallbackFiredPercentageDone;
-
-    int                        *m_pKillFlag;
+    IAPEProgressCallback * m_pProgressCallback;
+    int m_nTotalSteps;
+    int m_nCurrentStep;
+    int m_nLastCallbackFiredPercentageDone;
 };
 
 #endif // #ifndef APE_MACPROGRESSHELPER_H

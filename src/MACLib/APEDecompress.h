@@ -64,6 +64,7 @@ protected:
     
     // decoding buffer
     BOOL m_bErrorDecodingCurrentFrame;
+    int m_nErrorDecodingCurrentFrameOutputSilenceBlocks;
     int m_nCurrentFrameBufferBlock;
     int m_nFrameBufferFinishedBlocks;
     CCircleBuffer m_cbFrameBuffer;

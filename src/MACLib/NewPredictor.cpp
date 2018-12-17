@@ -16,28 +16,27 @@ CPredictorCompressNormal::CPredictorCompressNormal(int nCompressionLevel)
     }
     else if (nCompressionLevel == COMPRESSION_LEVEL_NORMAL)
     {
-        m_pNNFilter = new CNNFilter(16, 11, MAC_VERSION_NUMBER);
+        m_pNNFilter = new CNNFilter(16, 11, MAC_FILE_VERSION_NUMBER);
         m_pNNFilter1 = NULL;
         m_pNNFilter2 = NULL;
     }
     else if (nCompressionLevel == COMPRESSION_LEVEL_HIGH)
     {
-        m_pNNFilter = new CNNFilter(64, 11, MAC_VERSION_NUMBER);
+        m_pNNFilter = new CNNFilter(64, 11, MAC_FILE_VERSION_NUMBER);
         m_pNNFilter1 = NULL;
         m_pNNFilter2 = NULL;
     }
     else if (nCompressionLevel == COMPRESSION_LEVEL_EXTRA_HIGH)
     {
-        m_pNNFilter = new CNNFilter(256, 13, MAC_VERSION_NUMBER);
-        m_pNNFilter1 = new CNNFilter(32, 10, MAC_VERSION_NUMBER);
+        m_pNNFilter = new CNNFilter(256, 13, MAC_FILE_VERSION_NUMBER);
+        m_pNNFilter1 = new CNNFilter(32, 10, MAC_FILE_VERSION_NUMBER);
         m_pNNFilter2 = NULL;
     }
     else if (nCompressionLevel == COMPRESSION_LEVEL_INSANE)
     {
-        m_pNNFilter = new CNNFilter(1024 + 256, 15, MAC_VERSION_NUMBER);
-        m_pNNFilter1 = new CNNFilter(256, 13, MAC_VERSION_NUMBER);
-        m_pNNFilter2 = new CNNFilter(16, 11, MAC_VERSION_NUMBER);
-
+        m_pNNFilter = new CNNFilter(1024 + 256, 15, MAC_FILE_VERSION_NUMBER);
+        m_pNNFilter1 = new CNNFilter(256, 13, MAC_FILE_VERSION_NUMBER);
+        m_pNNFilter2 = new CNNFilter(16, 11, MAC_FILE_VERSION_NUMBER);
     }
     else
     {
@@ -285,9 +284,9 @@ CPredictorDecompress3950toCurrent::CPredictorDecompress3950toCurrent(int nCompre
     }
     else if (nCompressionLevel == COMPRESSION_LEVEL_INSANE)
     {
-        m_pNNFilter = new CNNFilter(1024 + 256, 15, MAC_VERSION_NUMBER);
-        m_pNNFilter1 = new CNNFilter(256, 13, MAC_VERSION_NUMBER);
-        m_pNNFilter2 = new CNNFilter(16, 11, MAC_VERSION_NUMBER);
+        m_pNNFilter = new CNNFilter(1024 + 256, 15, MAC_FILE_VERSION_NUMBER);
+        m_pNNFilter1 = new CNNFilter(256, 13, MAC_FILE_VERSION_NUMBER);
+        m_pNNFilter2 = new CNNFilter(16, 11, MAC_FILE_VERSION_NUMBER);
 
     }
     else

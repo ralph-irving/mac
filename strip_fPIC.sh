@@ -6,7 +6,9 @@ command=""
 while [ $1 ]; do
 	if [ "$1" != "-fPIC" ]; then
 		if [ "$1" != "-DPIC" ]; then
-			command="$command $1"
+			if [ "$1" != "-fno-common" ]; then
+				command="$command $1"
+			fi
 		fi
 	fi
 	shift

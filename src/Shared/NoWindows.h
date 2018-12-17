@@ -6,34 +6,36 @@
 #include "MACUtils.h"
 
 #define FALSE    0
-#define TRUE    1
+#define TRUE     1
 
 #define NEAR
 #define FAR
 
-typedef unsigned long        uint64;
-typedef long                    int64;
+#define __forceinline inline
+
+typedef unsigned long       uint64;
+typedef long                int64;
 typedef unsigned int        uint32;
-typedef int                    int32;
-typedef unsigned short        uint16;
-typedef short                int16;
-typedef unsigned char        uint8;
+typedef int                 int32;
+typedef unsigned short      uint16;
+typedef short               int16;
+typedef unsigned char       uint8;
 typedef char                int8;
 typedef char                str_ansi;
-typedef unsigned char        str_utf8;
-typedef wchar_t                str_utf16;
+typedef unsigned char       str_utf8;
+typedef wchar_t             str_utf16;
 
 typedef unsigned long       DWORD;
 typedef int                 BOOL;
 typedef unsigned char       BYTE;
 typedef unsigned short      WORD;
 typedef float               FLOAT;
-typedef void *                HANDLE;
+typedef void *              HANDLE;
 typedef unsigned int        UINT;
 typedef unsigned int        WPARAM;
 typedef long                LPARAM;
 typedef const char *        LPCSTR;
-typedef char *                LPSTR;
+typedef char *              LPSTR;
 typedef long                LRESULT;
 typedef unsigned char       UCHAR;
 typedef const wchar_t *     LPCWSTR;
@@ -67,7 +69,7 @@ typedef const wchar_t *     LPCWSTR;
 #include <locale.h> 
 
 #define _FPOSOFF(fp) ((long)(fp).__pos)
-#define MAX_PATH    260
+#define MAX_PATH    4096
 
 #ifndef _WAVEFORMATEX_
 #define _WAVEFORMATEX_

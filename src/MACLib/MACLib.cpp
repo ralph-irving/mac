@@ -15,30 +15,45 @@
 
 IAPEDecompress * CreateIAPEDecompressCore(CAPEInfo * pAPEInfo, int nStartBlock, int nFinishBlock, int * pErrorCode)
 {
+    // create the decompressor (this eats the CAPEInfo object)
     IAPEDecompress * pAPEDecompress = NULL;
-    if (pAPEInfo != NULL && *pErrorCode == ERROR_SUCCESS)
-    {
-        try
+
+    // proceed if we have an info object
+    if (pAPEInfo != NULL)
+    {    
+        // proceed if there's no error with the info object
+        if (*pErrorCode == ERROR_SUCCESS)
         {
-            if (pAPEInfo->GetInfo(APE_INFO_FILE_VERSION) >= 3930)
-                pAPEDecompress = new CAPEDecompress(pErrorCode, pAPEInfo, nStartBlock, nFinishBlock);
+            try
+            {
+                // create
+                if (pAPEInfo->GetInfo(APE_INFO_FILE_VERSION) >= 3930)
+                    pAPEDecompress = new CAPEDecompress(pErrorCode, pAPEInfo, nStartBlock, nFinishBlock);
 #ifdef BACKWARDS_COMPATIBILITY
-            else
-                pAPEDecompress = new CAPEDecompressOld(pErrorCode, pAPEInfo, nStartBlock, nFinishBlock);
+                else
+                    pAPEDecompress = new CAPEDecompressOld(pErrorCode, pAPEInfo, nStartBlock, nFinishBlock);
 #endif
 
-            if (pAPEDecompress == NULL || *pErrorCode != ERROR_SUCCESS)
+                // error check
+                if (pAPEDecompress == NULL || *pErrorCode != ERROR_SUCCESS)
+                {
+                    SAFE_DELETE(pAPEDecompress)
+                }
+            }
+            catch(...)
             {
                 SAFE_DELETE(pAPEDecompress)
+                *pErrorCode = ERROR_UNDEFINED;
             }
         }
-        catch(...)
+        else
         {
-            SAFE_DELETE(pAPEDecompress)
-            *pErrorCode = ERROR_UNDEFINED;
+            // eat the CAPEInfo object if we didn't create a decompressor
+            SAFE_DELETE(pAPEInfo)
         }
     }
 
+    // return
     return pAPEDecompress;
 }
 
@@ -62,7 +77,7 @@ IAPEDecompress * __stdcall CreateIAPEDecompress(const str_utf16 * pFilename, int
         pExtension--;
 
     // take the appropriate action (based on the extension)
-    if (wcsicmp(pExtension, L".apl") == 0)
+    if (_wcsicmp(pExtension, L".apl") == 0)
     {
         // "link" file (.apl linked large APE file)
         CAPELink APELink(pFilename);
@@ -72,7 +87,7 @@ IAPEDecompress * __stdcall CreateIAPEDecompress(const str_utf16 * pFilename, int
             nStartBlock = APELink.GetStartBlock(); nFinishBlock = APELink.GetFinishBlock();
         }
     }
-    else if ((wcsicmp(pExtension, L".mac") == 0) || (wcsicmp(pExtension, L".ape") == 0))
+    else if ((_wcsicmp(pExtension, L".mac") == 0) || (_wcsicmp(pExtension, L".ape") == 0))
     {
         // plain .ape file
         pAPEInfo = new CAPEInfo(&nErrorCode, pFilename);
@@ -85,21 +100,27 @@ IAPEDecompress * __stdcall CreateIAPEDecompress(const str_utf16 * pFilename, int
         return NULL;
     }
 
-    // create and return
+    // create
     IAPEDecompress * pAPEDecompress = CreateIAPEDecompressCore(pAPEInfo, nStartBlock, nFinishBlock, &nErrorCode);
     if (pErrorCode) *pErrorCode = nErrorCode;
+
+    // return
     return pAPEDecompress;
 }
 
 IAPEDecompress * __stdcall CreateIAPEDecompressEx(CIO * pIO, int * pErrorCode)
 {
+    // create info 
     int nErrorCode = ERROR_UNDEFINED;
     CAPEInfo * pAPEInfo = new CAPEInfo(&nErrorCode, pIO);
+
+    // create decompress core
     IAPEDecompress * pAPEDecompress = CreateIAPEDecompressCore(pAPEInfo, -1, -1, &nErrorCode);
     if (pErrorCode) *pErrorCode = nErrorCode;
+
+    // return
     return pAPEDecompress;
 }
-
 
 IAPEDecompress * __stdcall CreateIAPEDecompressEx2(CAPEInfo * pAPEInfo, int nStartBlock, int nFinishBlock, int * pErrorCode)
 {

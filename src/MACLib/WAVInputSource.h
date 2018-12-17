@@ -3,6 +3,10 @@
 
 #include "IO.h"
 
+#ifdef SHNTOOL
+#define FULL_HEADER_SIZE 32768
+#endif
+
 /*************************************************************************************
 CInputSource - base input format class (allows multiple format support)
 *************************************************************************************/
@@ -54,6 +58,9 @@ private:
     int m_nTerminatingBytes;
     int m_nFileBytes;
     BOOL m_bIsValid;
+#ifdef SHNTOOL
+    unsigned char m_sFullHeader[FULL_HEADER_SIZE];
+#endif
 };
 
 /*************************************************************************************

@@ -1,7 +1,7 @@
 #include "All.h"
-#include "GlobalFunctions.h"
-#include "IO.h"
 #include "CharacterHelper.h"
+#include "IO.h"
+#include "GlobalFunctions.h"
 
 /*
 #ifndef __GNUC_IA32__
@@ -66,7 +66,11 @@ int WriteSafe(CIO * pIO, void * pBuffer, int nBytes)
 
 BOOL FileExists(wchar_t * pFilename)
 {    
+#ifdef SHNTOOL
+    if (0 == wcscmp(pFilename, L"-"))
+#else
     if (0 == wcscmp(pFilename, L"-")  ||  0 == wcscmp(pFilename, L"/dev/stdin"))
+#endif
         return TRUE;
 
 #ifdef _WIN32
@@ -79,14 +83,14 @@ BOOL FileExists(wchar_t * pFilename)
     if (hFind != INVALID_HANDLE_VALUE)
     {
         bFound = TRUE;
-        CloseHandle(hFind);
+        FindClose(hFind);
     }
 
     return bFound;
 
 #else
 
-    CSmartPtr<char> spANSI(GetANSIFromUTF16(pFilename), TRUE);
+    CSmartPtr<char> spANSI(CAPECharacterHelper::GetANSIFromUTF16(pFilename), TRUE);
 
     struct stat b;
 

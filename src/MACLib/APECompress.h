@@ -32,7 +32,11 @@ public:
     int AddDataFromInputSource(CInputSource * pInputSource, int nMaxBytes = -1, int * pBytesAdded = NULL);
     
     // finish / kill
+#ifdef SHNTOOL
+    int Finish(unsigned char * pTerminatingData, int nTerminatingBytes, int nWAVTerminatingBytes, const void * pHeaderData, int nHeaderBytes);
+#else
     int Finish(unsigned char * pTerminatingData, int nTerminatingBytes, int nWAVTerminatingBytes);
+#endif
     int Kill();
     
 private:

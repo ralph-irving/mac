@@ -27,12 +27,9 @@ public:
     int Prepare(const unsigned char * pRawData, int nBytes, const WAVEFORMATEX * pWaveFormatEx, int * pOutputX, int * pOutputY, unsigned int * pCRC, int * pSpecialCodes, int * pPeakLevel);
     void Unprepare(int X, int Y, const WAVEFORMATEX * pWaveFormatEx, unsigned char * pOutput, unsigned int * pCRC);
 
-
 #ifdef BACKWARDS_COMPATIBILITY
     int UnprepareOld(int * pInputX, int *pInputY, int nBlocks, const WAVEFORMATEX * pWaveFormatEx, unsigned char * pRawData, unsigned int * pCRC, int * pSpecialCodes, int nFileVersion);
 #endif
-
 };
-
 
 #endif // #ifndef APE_PREPARE_H

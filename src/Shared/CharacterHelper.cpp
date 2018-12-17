@@ -1,7 +1,7 @@
 #include "All.h"
 #include "CharacterHelper.h"
 
-str_ansi * GetANSIFromUTF8(const str_utf8 * pUTF8)
+str_ansi * CAPECharacterHelper::GetANSIFromUTF8(const str_utf8 * pUTF8)
 {
     str_utf16 * pUTF16 = GetUTF16FromUTF8(pUTF8);
     str_ansi * pANSI = GetANSIFromUTF16(pUTF16);
@@ -9,7 +9,7 @@ str_ansi * GetANSIFromUTF8(const str_utf8 * pUTF8)
     return pANSI;
 }
 
-str_ansi * GetANSIFromUTF16(const str_utf16 * pUTF16)
+str_ansi * CAPECharacterHelper::GetANSIFromUTF16(const str_utf16 * pUTF16)
 {
     /* 
      * In UTF-8, there will be at most 4 bytes for one character,
@@ -33,7 +33,7 @@ str_ansi * GetANSIFromUTF16(const str_utf16 * pUTF16)
     return (str_ansi *) pANSI;
 }
 
-str_utf16 * GetUTF16FromANSI(const str_ansi * pANSI)
+str_utf16 * CAPECharacterHelper::GetUTF16FromANSI(const str_ansi * pANSI)
 {
     const int nCharacters = pANSI ? strlen(pANSI) : 0;
     str_utf16 * pUTF16 = new str_utf16 [nCharacters + 1];
@@ -51,7 +51,7 @@ str_utf16 * GetUTF16FromANSI(const str_ansi * pANSI)
     return pUTF16;
 }
 
-str_utf16 * GetUTF16FromUTF8(const str_utf8 * pUTF8)
+str_utf16 * CAPECharacterHelper::GetUTF16FromUTF8(const str_utf8 * pUTF8)
 {
     // get the length
     int nCharacters = 0; int nIndex = 0;
@@ -95,7 +95,7 @@ str_utf16 * GetUTF16FromUTF8(const str_utf8 * pUTF8)
     return pUTF16; 
 }
 
-str_utf8 * GetUTF8FromANSI(const str_ansi * pANSI)
+str_utf8 * CAPECharacterHelper::GetUTF8FromANSI(const str_ansi * pANSI)
 {
     str_utf16 * pUTF16 = GetUTF16FromANSI(pANSI);
     str_utf8 * pUTF8 = GetUTF8FromUTF16(pUTF16);
@@ -103,7 +103,7 @@ str_utf8 * GetUTF8FromANSI(const str_ansi * pANSI)
     return pUTF8;
 }
 
-str_utf8 * GetUTF8FromUTF16(const str_utf16 * pUTF16)
+str_utf8 * CAPECharacterHelper::GetUTF8FromUTF16(const str_utf16 * pUTF16)
 {
     // get the size(s)
     int nCharacters = wcslen(pUTF16);

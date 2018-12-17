@@ -22,6 +22,7 @@ IPredictorDecompress * __stdcall CreateIPredictorDecompress();
 class CPredictorCompressNormal : public IPredictorCompress
 {
 public:
+
     CPredictorCompressNormal(int nCompressionLevel);
     virtual ~CPredictorCompressNormal();
 
@@ -50,6 +51,7 @@ protected:
 class CPredictorDecompressNormal3930to3950 : public IPredictorDecompress
 {
 public:
+
     CPredictorDecompressNormal3930to3950(int nCompressionLevel, int nVersion);
     virtual ~CPredictorDecompressNormal3930to3950();
 
@@ -77,6 +79,7 @@ protected:
 class CPredictorDecompress3950toCurrent : public IPredictorDecompress
 {
 public:
+
     CPredictorDecompress3950toCurrent(int nCompressionLevel, int nVersion);
     virtual ~CPredictorDecompress3950toCurrent();
 

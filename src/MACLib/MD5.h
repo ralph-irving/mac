@@ -41,38 +41,38 @@ class CMD5Helper
 {
 public:
 
-	CMD5Helper(BOOL bInitialize = TRUE)
-	{
-		if (bInitialize)
-			Initialize();
-	}
+    CMD5Helper(BOOL bInitialize = TRUE)
+    {
+        if (bInitialize)
+            Initialize();
+    }
 
-	BOOL Initialize()
-	{
-		memset(&m_MD5Context, 0, sizeof(m_MD5Context));
-		MD5Init(&m_MD5Context);
-		m_nTotalBytes = 0;
-		return TRUE;
-	}
+    BOOL Initialize()
+    {
+        memset(&m_MD5Context, 0, sizeof(m_MD5Context));
+        MD5Init(&m_MD5Context);
+        m_nTotalBytes = 0;
+        return TRUE;
+    }
 
-	inline void AddData(const void * pData, int nBytes)
-	{
-		MD5Update(&m_MD5Context, (const unsigned char *) pData, nBytes);
-		m_nTotalBytes += nBytes;
-	}
+    __forceinline void AddData(const void * pData, int nBytes)
+    {
+        MD5Update(&m_MD5Context, (const unsigned char *) pData, nBytes);
+        m_nTotalBytes += nBytes;
+    }
 
-	BOOL GetResult(unsigned char cResult[16])
-	{
-		memset(cResult, 0, 16);
-		MD5Final(cResult, &m_MD5Context);
-		return TRUE;
-	}
+    BOOL GetResult(unsigned char cResult[16])
+    {
+        memset(cResult, 0, 16);
+        MD5Final(cResult, &m_MD5Context);
+        return TRUE;
+    }
 
 protected:
 
-	MD5_CTX m_MD5Context;
-	BOOL m_bStopped;
-	int m_nTotalBytes;
+    MD5_CTX m_MD5Context;
+    BOOL m_bStopped;
+    int m_nTotalBytes;
 };
 
 

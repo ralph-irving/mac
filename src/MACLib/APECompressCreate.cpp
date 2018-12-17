@@ -1,7 +1,6 @@
 #include "All.h"
 #include "IO.h"
 #include "APECompressCreate.h"
-
 #include "APECompressCore.h"
 
 CAPECompressCreate::CAPECompressCreate()
@@ -91,14 +90,23 @@ int CAPECompressCreate::EncodeFrame(const void * pInputData, int nInputBytes)
     return nRetVal;
 }
 
+#ifdef SHNTOOL
+int CAPECompressCreate::Finish(const void * pTerminatingData, int nTerminatingBytes, int nWAVTerminatingBytes, const void * pHeaderData, int nHeaderBytes)
+#else
 int CAPECompressCreate::Finish(const void * pTerminatingData, int nTerminatingBytes, int nWAVTerminatingBytes)
+#endif
 {
     // clear the bit array
     RETURN_ON_ERROR(m_spAPECompressCore->GetBitArray()->OutputBitArray(TRUE));
     
     // finalize the file
+#ifdef SHNTOOL
+    RETURN_ON_ERROR(FinalizeFile(m_spIO, m_nFrameIndex, m_nLastFrameBlocks, 
+        pTerminatingData, nTerminatingBytes, nWAVTerminatingBytes, m_spAPECompressCore->GetPeakLevel(), pHeaderData, nHeaderBytes));
+#else
     RETURN_ON_ERROR(FinalizeFile(m_spIO, m_nFrameIndex, m_nLastFrameBlocks, 
         pTerminatingData, nTerminatingBytes, nWAVTerminatingBytes, m_spAPECompressCore->GetPeakLevel()));
+#endif
     
     return ERROR_SUCCESS;
 }
@@ -124,7 +132,7 @@ int CAPECompressCreate::InitializeFile(CIO * pIO, const WAVEFORMATEX * pwfeInput
     APEDescriptor.cID[1] = 'A';
     APEDescriptor.cID[2] = 'C';
     APEDescriptor.cID[3] = ' ';
-    APEDescriptor.nVersion = MAC_VERSION_NUMBER;
+    APEDescriptor.nVersion = MAC_FILE_VERSION_NUMBER;
     
     APEDescriptor.nDescriptorBytes = sizeof(APEDescriptor);
     APEDescriptor.nHeaderBytes = sizeof(APEHeader);
@@ -167,8 +175,22 @@ int CAPECompressCreate::InitializeFile(CIO * pIO, const WAVEFORMATEX * pwfeInput
     return ERROR_SUCCESS;
 }
 
-
+#ifdef SHNTOOL
+void ULONG_TO_UCHAR_LE(unsigned char * buf,unsigned long num)
+/* converts an unsigned long to 4 bytes stored in little-endian format */
+{
+  buf[0] = (unsigned char)(num);
+  buf[1] = (unsigned char)(num >> 8);
+  buf[2] = (unsigned char)(num >> 16);
+  buf[3] = (unsigned char)(num >> 24);
+}
+#endif
+ 
+#ifdef SHNTOOL
+int CAPECompressCreate::FinalizeFile(CIO * pIO, int nNumberOfFrames, int nFinalFrameBlocks, const void * pTerminatingData, int nTerminatingBytes, int nWAVTerminatingBytes, int nPeakLevel, const void * pHeaderData, int nHeaderBytes)
+#else
 int CAPECompressCreate::FinalizeFile(CIO * pIO, int nNumberOfFrames, int nFinalFrameBlocks, const void * pTerminatingData, int nTerminatingBytes, int nWAVTerminatingBytes, int nPeakLevel)
+#endif
 {
     // store the tail position
     int nTailPosition = pIO->GetPosition();
@@ -177,9 +199,12 @@ int CAPECompressCreate::FinalizeFile(CIO * pIO, int nNumberOfFrames, int nFinalF
     unsigned int nBytesWritten = 0;
     unsigned int nBytesRead = 0;
     int nRetVal = 0;
-    if (nTerminatingBytes > 0) 
+    if ((pTerminatingData != NULL) && (nTerminatingBytes > 0))
     {
-        m_spAPECompressCore->GetBitArray()->GetMD5Helper().AddData(pTerminatingData, nTerminatingBytes);
+        // update the MD5 sum to include the WAV terminating bytes
+        m_spAPECompressCore->GetBitArray()->GetMD5Helper().AddData(pTerminatingData, nWAVTerminatingBytes);
+
+        // write the entire chunk to the new file
         if (pIO->Write((void *) pTerminatingData, nTerminatingBytes, &nBytesWritten) != 0) { return ERROR_IO_WRITE; }
     }
     
@@ -203,11 +228,11 @@ int CAPECompressCreate::FinalizeFile(CIO * pIO, int nNumberOfFrames, int nFinalF
     // update the header
     APEHeader.nFinalFrameBlocks = nFinalFrameBlocks;
     APEHeader.nTotalFrames = nNumberOfFrames;
-    
+
     // update the descriptor
     APEDescriptor.nAPEFrameDataBytes = nTailPosition - (APEDescriptor.nDescriptorBytes + APEDescriptor.nHeaderBytes + APEDescriptor.nSeekTableBytes + APEDescriptor.nHeaderDataBytes);
     APEDescriptor.nAPEFrameDataBytesHigh = 0;
-    APEDescriptor.nTerminatingDataBytes = nTerminatingBytes;
+    APEDescriptor.nTerminatingDataBytes = nWAVTerminatingBytes;
     
     // update the MD5
     m_spAPECompressCore->GetBitArray()->GetMD5Helper().AddData(&APEHeader, sizeof(APEHeader));
@@ -239,6 +264,54 @@ int CAPECompressCreate::FinalizeFile(CIO * pIO, int nNumberOfFrames, int nFinalF
 	m_spSeekTable[i] = swap_int32(m_spSeekTable[i]);
     }
 #endif
-    
+
+#ifdef SHNTOOL
+    char *p;
+    int j;
+    uint32 nDataSize;
+    bool bHasWaveHeader = ((pHeaderData != NULL) && (nHeaderBytes > 0) && (nHeaderBytes != CREATE_WAV_HEADER_ON_DECOMPRESSION));
+
+    // rewrite the WAVE header with known, correct values
+    if (bHasWaveHeader)
+    {
+        CSmartPtr<unsigned char> spOldHeader;
+        spOldHeader.Assign(new unsigned char [nHeaderBytes], TRUE);
+        memcpy(spOldHeader,pHeaderData,nHeaderBytes);
+
+        nDataSize = (((nNumberOfFrames - 1) * m_nSamplesPerFrame + nFinalFrameBlocks) * m_wfeInput.nBlockAlign);
+        for (j = 0; j < nHeaderBytes; j++)
+        {
+            if ((p = strstr((char *)pHeaderData+j,"RIFF"))) {
+                ULONG_TO_UCHAR_LE((unsigned char *)p+4,nDataSize + nHeaderBytes - 8);
+                break;
+            }
+        }
+        for (j = 0; j < nHeaderBytes; j++)
+        {
+            if ((p = strstr((char *)pHeaderData+j,"data"))) {
+                ULONG_TO_UCHAR_LE((unsigned char *)p+4,nDataSize);
+                break;
+            }
+        }
+
+        if (pIO->Write((void *) pHeaderData, nHeaderBytes, &nBytesWritten) != 0) { return ERROR_IO_WRITE; }
+
+        if (memcmp(spOldHeader,pHeaderData,nHeaderBytes))
+        {
+            swap_ape_descriptor(&APEDescriptor);
+
+            GetChecksum(pIO,&APEDescriptor,0,APEDescriptor.cFileMD5);
+
+            swap_ape_descriptor(&APEDescriptor);
+
+            if (pIO->Seek(0, FILE_BEGIN) != ERROR_SUCCESS) { return ERROR_IO_WRITE; }
+
+            if (pIO->Write(&APEDescriptor, sizeof(APEDescriptor), &nBytesWritten) != 0) { return ERROR_IO_WRITE; }
+        }
+
+        spOldHeader.Delete();
+    }
+#endif
+
     return ERROR_SUCCESS;
 }

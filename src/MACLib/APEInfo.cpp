@@ -50,6 +50,8 @@ CAPEInfo::CAPEInfo(int * pErrorCode, const wchar_t * pFilename, CAPETag * pTag)
         m_spAPETag.Assign(pTag);
     }
 
+    // update
+    CheckHeaderInformation();
 }
 
 CAPEInfo::CAPEInfo(int * pErrorCode, CIO * pIO, CAPETag * pTag)
@@ -72,8 +74,10 @@ CAPEInfo::CAPEInfo(int * pErrorCode, CIO * pIO, CAPETag * pTag)
         m_spAPETag.Assign(new CAPETag(m_spIO, TRUE));
     else
         m_spAPETag.Assign(pTag);
-}
 
+    // update
+    CheckHeaderInformation();
+}
 
 /*****************************************************************************************
 Destruction
@@ -99,6 +103,37 @@ int CAPEInfo::CloseFile()
     // re-initialize variables
     m_APEFileInfo.nSeekTableElements = 0;
     m_bHasFileInformationLoaded = FALSE;
+
+    return ERROR_SUCCESS;
+}
+
+/*****************************************************************************************
+Performs sanity checks on all of the header data.
+*****************************************************************************************/
+int CAPEInfo::CheckHeaderInformation()
+{
+    // Fixes a bug with MAC 3.99 where conversion from APE to APE could include the file tag
+    // as part of the WAV terminating data.  This sanity check fixes the problem.
+    if ((m_APEFileInfo.spAPEDescriptor != NULL) &&
+        (m_APEFileInfo.spAPEDescriptor->nTerminatingDataBytes > 0))
+    {
+        int nFileBytes = m_spIO->GetSize();
+        if (nFileBytes > 0)
+        {
+            nFileBytes -= m_spAPETag->GetTagBytes();
+            nFileBytes -= m_APEFileInfo.spAPEDescriptor->nDescriptorBytes;
+            nFileBytes -= m_APEFileInfo.spAPEDescriptor->nHeaderBytes;
+            nFileBytes -= m_APEFileInfo.spAPEDescriptor->nSeekTableBytes;
+            nFileBytes -= m_APEFileInfo.spAPEDescriptor->nHeaderDataBytes;
+            nFileBytes -= m_APEFileInfo.spAPEDescriptor->nAPEFrameDataBytes;
+            if (nFileBytes < m_APEFileInfo.nWAVTerminatingBytes)
+            {
+                m_APEFileInfo.nMD5Invalid = TRUE;
+                m_APEFileInfo.nWAVTerminatingBytes = nFileBytes;
+                m_APEFileInfo.spAPEDescriptor->nTerminatingDataBytes = nFileBytes;
+            }
+        }
+    }
 
     return ERROR_SUCCESS;
 }

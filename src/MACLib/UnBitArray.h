@@ -17,7 +17,7 @@ class CUnBitArray : public CUnBitArrayBase
 public:
 
     // construction/destruction
-    CUnBitArray(CIO * pIO, int nVersion);
+    CUnBitArray(CIO * pIO, int nVersion, int nFurthestReadByte);
     ~CUnBitArray();
 
     unsigned int DecodeValue(DECODE_VALUE_METHOD DecodeMethod, int nParam1 = 0, int nParam2 = 0);
@@ -37,15 +37,13 @@ private:
     // data 
     int m_nFlushCounter;
     int m_nFinalizeCounter;
-    
-    RANGE_CODER_STRUCT_DECOMPRESS    m_RangeCoderInfo;
-    
+    RANGE_CODER_STRUCT_DECOMPRESS m_RangeCoderInfo;
     uint32 m_nRefillBitThreshold;
     
     // functions
+    inline uint32 DecodeByte();
     inline int RangeDecodeFast(int nShift);
     inline int RangeDecodeFastWithUpdate(int nShift);
-    inline unsigned char GetC();
 };
 
 #endif // #ifndef APE_UNBITARRAY_H

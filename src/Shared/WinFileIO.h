@@ -14,7 +14,7 @@ public:
     ~CWinFileIO();
 
     // open / close
-    int Open(const wchar_t * pName);
+    int Open(const wchar_t * pName, BOOL bOpenReadOnly = FALSE);
     int Close();
     
     // read / write

@@ -4,6 +4,7 @@ Includes
 #include "All.h"
 #include "BitArray.h"
 #include "MD5.h"
+#include <algorithm>
 
 /************************************************************************************
 Declares
@@ -113,7 +114,7 @@ int CBitArray::OutputBitArray(BOOL bFinalize)
         m_nCurrentBitIndex = (m_nCurrentBitIndex & 31);
         
         // zero the rest of the memory (may not need the +1 because of frame byte alignment)
-        memset(&m_pBitArray[1], 0, min(nBytesToWrite + 1, BIT_ARRAY_BYTES - 1));
+        memset(&m_pBitArray[1], 0,(std::min<int>)(nBytesToWrite + 1, BIT_ARRAY_BYTES - 1));
     }
     
     // return a success
@@ -233,7 +234,7 @@ int CBitArray::EncodeValue(int nEncode, BIT_ARRAY_STATE & BitArrayState)
     nEncode = (nEncode > 0) ? nEncode * 2 - 1 : -nEncode * 2;
 
     // figure the pivot value
-    int nPivotValue = max(BitArrayState.nKSum / 32, 1);
+    int nPivotValue = (std::max<int>)(BitArrayState.nKSum / 32, 1);
     int nOverflow = nEncode / nPivotValue;
     int nBase = nEncode - (nOverflow * nPivotValue);
 

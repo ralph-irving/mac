@@ -8,6 +8,7 @@
 #include "GlobalFunctions.h"
 #include "MD5.h"
 #include "CharacterHelper.h"
+#include <algorithm>
 
 #define UNMAC_DECODER_OUTPUT_NONE       0
 #define UNMAC_DECODER_OUTPUT_WAV        1
@@ -251,7 +252,7 @@ int __stdcall GetChecksum(CIO * pIO, APE_DESCRIPTOR * spAPEDescriptor, int nJunk
     nBytesRead = 1;
     while ((nBytesLeft > 0) && (nBytesRead > 0))
     {
-        int nBytesToRead = min(16384, nBytesLeft);
+        int nBytesToRead = (std::min<int>)(16384, nBytesLeft);
         if (pIO->Read(spBuffer, nBytesToRead, &nBytesRead) != ERROR_SUCCESS)
             return ERROR_IO_READ;
 

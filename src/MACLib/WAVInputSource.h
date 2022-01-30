@@ -1,7 +1,7 @@
 #ifndef APE_WAVINPUTSOURCE_H
 #define APE_WAVINPUTSOURCE_H
 
-#include "IO.h"
+#include "APEIO.h"
 
 #ifdef SHNTOOL
 #define FULL_HEADER_SIZE 32768

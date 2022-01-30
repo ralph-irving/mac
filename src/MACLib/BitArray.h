@@ -1,7 +1,7 @@
 #ifndef APE_BITARRAY_H
 #define APE_BITARRAY_H
 
-#include "IO.h"
+#include "APEIO.h"
 #include "MD5.h"
 
 //#define BUILD_RANGE_TABLE

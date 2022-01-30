@@ -3,7 +3,7 @@
 #ifndef _winfileio_h_
 #define _winfileio_h_
 
-#include "IO.h"
+#include "APEIO.h"
 
 class CWinFileIO : public CIO
 {

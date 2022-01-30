@@ -3,7 +3,7 @@
 #ifndef APE_STDLIBFILEIO_H
 #define APE_STDLIBFILEIO_H
 
-#include "IO.h"
+#include "APEIO.h"
 
 class CStdLibFileIO : public CIO
 {

@@ -1,7 +1,7 @@
 #ifndef APE_APELINK_H
 #define APE_APELINK_H
 
-#include "IO.h"
+#include "APEIO.h"
 #include "APEInfo.h"
 
 class CAPELink

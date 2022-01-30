@@ -14,7 +14,7 @@ pkginclude_HEADERS = \
 	All.h \
 	GlobalFunctions.h \
 	ID3Genres.h \
-	IO.h \
+	APEIO.h \
 	SmartPtr.h \
 	StdLibFileIO.h \
 	NoWindows.h \

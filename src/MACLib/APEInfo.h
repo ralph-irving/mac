@@ -16,7 +16,7 @@ Notes:
 #ifndef APE_APEINFO_H
 #define APE_APEINFO_H
 
-#include "IO.h"
+#include "APEIO.h"
 #include "APETag.h"
 #include "MACLib.h"
 

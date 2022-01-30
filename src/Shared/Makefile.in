@@ -150,7 +150,7 @@ am__can_run_installinfo = \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
 am__pkginclude_HEADERS_DIST = config.h All.h GlobalFunctions.h \
-	ID3Genres.h IO.h SmartPtr.h StdLibFileIO.h NoWindows.h \
+	ID3Genres.h APEIO.h SmartPtr.h StdLibFileIO.h NoWindows.h \
 	CharacterHelper.h CircleBuffer.h MACUtils.h WinFileIO.h
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
@@ -330,7 +330,7 @@ noinst_LTLIBRARIES = libmacshared.la
 libmacshared_la_SOURCES = GlobalFunctions.cpp StdLibFileIO.cpp \
 	CharacterHelper.cpp CircleBuffer.cpp MACUtils.cpp \
 	$(am__append_1)
-pkginclude_HEADERS = config.h All.h GlobalFunctions.h ID3Genres.h IO.h \
+pkginclude_HEADERS = config.h All.h GlobalFunctions.h ID3Genres.h APEIO.h \
 	SmartPtr.h StdLibFileIO.h NoWindows.h CharacterHelper.h \
 	CircleBuffer.h MACUtils.h $(am__append_2)
 EXTRA_DIST = APEInfoDialog.cpp APEInfoDialog.h RollBuffer.h \

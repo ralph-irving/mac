@@ -357,7 +357,7 @@ SOURCE=.\WAVInputSource.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\Shared\IO.h
+SOURCE=..\Shared\APEIO.h
 # End Source File
 # Begin Source File
 

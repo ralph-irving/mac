@@ -17,6 +17,13 @@ Global includes
 #ifdef _WIN32
     #include <mmsystem.h>
     #include <tchar.h>
+#ifdef __MINGW32__
+    #include <unistd.h>
+    #include <time.h>
+    #include <sys/time.h>
+    #include <sys/types.h>
+    #include <sys/stat.h>
+#endif
 #else
     #include <unistd.h>
     #include <time.h>
@@ -39,7 +46,9 @@ Global compiler settings (useful for porting)
 *****************************************************************************************/
 // assembly code (helps performance, but limits portability)
 #ifndef BUILD_CROSS_PLATFORM
+#ifndef __MINGW32__
     #define ENABLE_ASSEMBLY
+#endif
 #endif
 
 // BACKWARDS_COMPATIBILITY is only needed for decoding APE 3.92 or earlier files.  It

@@ -73,7 +73,7 @@ BOOL FileExists(wchar_t * pFilename)
 #endif
         return TRUE;
 
-#ifdef _WIN32
+#if defined(_WIN32) && ! defined(__MINGW32__)
 
     BOOL bFound = FALSE;
 

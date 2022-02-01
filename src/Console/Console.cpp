@@ -124,7 +124,11 @@ char *ErrorToString(int nErrNo)
 Main (the main function)
 ***************************************************************************************/
 //int _tmain(int argc, TCHAR * argv[])
+#ifdef __MINGW32__
+int wmain(int argc, wchar_t *argv[])  // requires -municode on the g++ link command
+#else
 int main(int argc, char * argv[])
+#endif
 {
 	// variable declares
 	CSmartPtr<wchar_t> spInputFilename; CSmartPtr<wchar_t> spOutputFilename;
